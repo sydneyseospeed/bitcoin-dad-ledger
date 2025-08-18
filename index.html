@@ -1,14 +1,510 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Bitcoin Dad Ledger - Bitcoin Reserve</title>
-    <meta name="description" content="One dad. Two sons. Stacking every week... no matter what. Live DCA tracker showing real Bitcoin accumulation for generational wealth." />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e3a8a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+    <!-- Compact Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="brand">
+                    <h1 class="title">The Bitcoin Dad Ledger</h1>
+                </div>
+                <div class="header-right">
+                    <div class="btc-price">
+                        <div class="price-display">
+                            <span class="currency">₿</span>
+                            <span class="price" id="btc-price">Loading...</span>
+                            <span class="currency-label">AUD</span>
+                        </div>
+                        <div class="price-change" id="price-change">--</div>
+                    </div>
+                <!-- Currency Selector -->
+                <div class="currency-selector">
+                    <select id="currency-select">
+                        <option value="AUD">AUD</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GBP">GBP</option>
+                    </select>
+                </div>
+                    <div class="theme-controls">
+                        <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Top Metrics Section -->
+    <section class="metrics-top">
+        <div class="container">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-label">Total Invested</div>
+                        <div class="metric-value" id="total-invested">$0 AUD</div>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fab fa-bitcoin"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-label">Total BTC Stacked</div>
+                        <div class="metric-value" id="total-btc">₿ 0.00000000</div>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-label">Average Cost Basis</div>
+                        <div class="metric-value" id="avg-cost">$0 AUD</div>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-label">Current Value</div>
+                        <div class="metric-value" id="current-value">$0 AUD</div>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-label">Unrealized P&L</div>
+                        <div class="metric-value" id="unrealized-pnl">0.00%</div>
+                    </div>
+                </div>
+            <!-- CSV Upload for custom DCA data -->
+            <div class="csv-upload">
+                <label for="csv-file" class="csv-label">
+                    <i class="fas fa-file-upload"></i> Upload DCA CSV
+                </label>
+                <input type="file" id="csv-file" accept=".csv" style="display:none">
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Layout with Sidebar -->
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>Portfolio Insights</h3>
+                <p class="tagline">Detailed DCA analysis and patterns</p>
+            </div>
+
+            <!-- Portfolio Insights Cards -->
+            <div class="insights-sidebar">
+                <div class="insight-card-compact">
+                    <div class="insight-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="insight-content">
+                        <div class="insight-label">Avg Time Between</div>
+                        <div class="insight-value" id="avg-time-between">0 days</div>
+                        <div class="insight-detail" id="consistency-score">0% consistent</div>
+                    </div>
+                </div>
+                
+                <div class="insight-card-compact">
+                    <div class="insight-icon">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <div class="insight-content">
+                        <div class="insight-label">Largest Purchase</div>
+                        <div class="insight-value" id="largest-purchase">$0 AUD</div>
+                        <div class="insight-detail" id="largest-purchase-date">--</div>
+                    </div>
+                </div>
+                
+                <div class="insight-card-compact">
+                    <div class="insight-icon">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="insight-content">
+                        <div class="insight-label">Smallest Purchase</div>
+                        <div class="insight-value" id="smallest-purchase">$0 AUD</div>
+                        <div class="insight-detail" id="smallest-purchase-date">--</div>
+                    </div>
+                </div>
+                
+                <div class="insight-card-compact">
+                    <div class="insight-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="insight-content">
+                        <div class="insight-label">Current Streak</div>
+                        <div class="insight-value" id="current-streak">0 weeks</div>
+                        <div class="insight-detail" id="longest-streak">Longest: 0 weeks</div>
+                    </div>
+                </div>
+                
+                <div class="insight-card-compact">
+                    <div class="insight-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="insight-content">
+                        <div class="insight-label">Price Range</div>
+                        <div class="insight-value" id="price-range">$0 - $0</div>
+                        <div class="insight-detail" id="median-price">Median: $0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="sidebar-nav">
+                <a href="#chart" class="nav-link active">
+                    <i class="fas fa-chart-area"></i> Price Chart
+                </a>
+                <a href="#achievements" class="nav-link">
+                    <i class="fas fa-trophy"></i> Achievements
+                </a>
+                <a href="#transactions" class="nav-link">
+                    <i class="fas fa-list"></i> History
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Chart Section -->
+            <section class="chart-section" id="chart">
+                <div class="content-header">
+                    <h2>DCA Timeline</h2>
+                    <p>Bitcoin price over time with your DCA purchase markers</p>
+                </div>
+                
+                <div class="chart-controls">
+                    <div class="timeframe-buttons">
+                        <button class="timeframe-btn" data-period="1M">1M</button>
+                        <button class="timeframe-btn" data-period="3M">3M</button>
+                        <button class="timeframe-btn" data-period="6M">6M</button>
+                        <button class="timeframe-btn" data-period="1Y">1Y</button>
+                        <button class="timeframe-btn active" data-period="ALL">All</button>
+                    </div>
+                    <div class="chart-options">
+                        <button class="chart-option-btn" id="reset-zoom">
+                            <i class="fas fa-search-minus"></i> Reset Zoom
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="dcaChart" style="height: 500px;"></canvas>
+                </div>
+            </section>
+
+            <!-- Monthly Pattern Chart -->
+            <section class="pattern-section" id="pattern">
+                <div class="content-header">
+                    <h2>Monthly Investment Pattern</h2>
+                    <p>Your DCA consistency and investment rhythm over time</p>
+                </div>
+                
+                <div class="pattern-chart-container">
+                    <canvas id="patternChart" style="height: 350px;"></canvas>
+                </div>
+            </section>
+
+            <!-- Achievement Badges -->
+            <section class="achievements" id="achievements">
+                <div class="content-header">
+                    <h2>Milestones & Achievements</h2>
+                    <p>Celebrating your Bitcoin stacking journey</p>
+                </div>
+                
+                <div class="achievements-grid-main" id="achievements-grid">
+                    <!-- Achievement badges will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <!-- Transaction Table -->
+            <section class="transactions" id="transactions">
+                <div class="content-header">
+                    <h2>Transaction History</h2>
+                    <div class="table-controls">
+                        <button class="sort-btn" onclick="sortTable('date')">
+                            <i class="fas fa-sort"></i> Date
+                        </button>
+                        <button class="sort-btn" onclick="sortTable('amount')">
+                            <i class="fas fa-sort"></i> Amount
+                        </button>
+                        <button class="sort-btn" onclick="sortTable('btc')">
+                            <i class="fas fa-sort"></i> BTC
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="transactions-table" id="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Source</th>
+                                <th>AUD Amount</th>
+                                <th>BTC Received</th>
+                                <th>Price per BTC</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-body">
+                            <!-- Transactions will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Join the Bitcoin Dad Community</h2>
+                <p>Start your own Bitcoin stacking journey with proven strategies and tools</p>
+                
+                <!-- Community Testimonials -->
+                <div class="community-testimonials">
+                    <div class="testimonials-header">
+                        <h3>What Bitcoin Dads Are Saying</h3>
+                    </div>
+                    <div class="testimonials-grid">
+                        <div class="testimonial">
+                            <div class="testimonial-avatar">MJ</div>
+                            <div class="testimonial-content">
+                                <div class="testimonial-text">"The Bitcoin Dad approach changed my perspective on long-term wealth building. Consistent DCA is the way."</div>
+                                <div class="testimonial-author">- Matt J., Community Member</div>
+                            </div>
+                        </div>
+                        <div class="testimonial">
+                            <div class="testimonial-avatar">DS</div>
+                            <div class="testimonial-content">
+                                <div class="testimonial-text">"Finally found a realistic approach to Bitcoin that fits with family life. My wife loves the transparency."</div>
+                                <div class="testimonial-author">- David S., Bitcoin Dad</div>
+                            </div>
+                        </div>
+                        <div class="testimonial">
+                            <div class="testimonial-avatar">TM</div>
+                            <div class="testimonial-content">
+                                <div class="testimonial-text">"Teaching my kids about Bitcoin with this ledger. They see the discipline and consistency paying off."</div>
+                                <div class="testimonial-author">- Tom M., Father of 3</div>
+                            </div>
+                        </div>
+                        <div class="testimonial">
+                            <div class="testimonial-avatar">RC</div>
+                            <div class="testimonial-content">
+                                <div class="testimonial-text">"Best investment strategy I've ever followed. No stress, just consistent stacking for the future."</div>
+                                <div class="testimonial-author">- Rob C., Bitcoin Dad</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonials-footer">
+                        <button class="load-more-testimonials" id="load-more-testimonials">
+                            Load More Stories
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Community Stats -->
+                <div class="community-stats-section">
+                    <div class="community-leaderboard">
+                        <div class="leaderboard-header">
+                            <h3>Community Impact <span class="anonymous-badge">(Anonymous)</span></h3>
+                            <p>See how you stack up against other Bitcoin Dads</p>
+                        </div>
+                        <div class="leaderboard-entries">
+                            <div class="leaderboard-entry">
+                                <div class="leaderboard-rank">#1</div>
+                                <div class="leaderboard-user">Longest DCA Streak</div>
+                                <div class="leaderboard-stat">127 weeks</div>
+                            </div>
+                            <div class="leaderboard-entry">
+                                <div class="leaderboard-rank">#2</div>
+                                <div class="leaderboard-user">Most Consistent Stacker</div>
+                                <div class="leaderboard-stat">98% consistency</div>
+                            </div>
+                            <div class="leaderboard-entry">
+                                <div class="leaderboard-rank">#3</div>
+                                <div class="leaderboard-user">Community Average</div>
+                                <div class="leaderboard-stat">0.15 BTC</div>
+                            </div>
+                            <div class="leaderboard-entry">
+                                <div class="leaderboard-rank">#4</div>
+                                <div class="leaderboard-user">Average Weekly DCA</div>
+                                <div class="leaderboard-stat">$125 AUD</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cta-buttons">
+                    <a href="https://bitcoinreserve.bio" class="cta-btn primary" target="_blank">
+                        <i class="fas fa-download"></i>
+                        Download Bitcoin Dad Handbook
+                    </a>
+                    <a href="https://bitcoinreserve.bio" class="cta-btn primary" target="_blank">
+                        <i class="fas fa-users"></i>
+                        Join Bitcoin Dad's Community
+                    </a>
+                    <a href="https://script.bitcoinreserve.com" class="cta-btn primary" target="_blank">
+                        <i class="fas fa-file-alt"></i>
+                        Download Wife Script
+                    </a>
+                </div>
+                
+                <div class="social-links">
+                    <a href="https://x.com/bitcoinreserve_" target="_blank" class="social-link">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/bitcoinreserve_" target="_blank" class="social-link">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=61571421707409" target="_blank" class="social-link">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 Bitcoin Reserve. Building generational wealth, one satoshi at a time.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Sound Toggle -->
+    <button class="sound-toggle" id="sound-toggle" title="Toggle Sound Effects">
+        <i class="fas fa-volume-up"></i>
+    </button>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-actions">
+        <button class="fab-btn share-fab" id="open-share-modal" title="Share Portfolio">
+            <i class="fas fa-share-alt"></i>
+        </button>
+        <button class="fab-btn scroll-top" id="scroll-top" title="Back to Top">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal" id="share-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share Your Bitcoin Journey</h3>
+                <button class="modal-close" id="close-share-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="share-card" id="share-card">
+                    <div class="share-card-header">
+                        <h4>The Bitcoin Dad Ledger</h4>
+                        <p>Stacking since November 2024</p>
+                    </div>
+                    <div class="share-metrics">
+                        <div class="share-metric">
+                            <div class="share-metric-value" id="share-total-btc">₿ 0.00000000</div>
+                            <div class="share-metric-label">Total BTC</div>
+                        </div>
+                        <div class="share-metric">
+                            <div class="share-metric-value" id="share-total-invested">$0</div>
+                            <div class="share-metric-label">Invested</div>
+                        </div>
+                        <div class="share-metric">
+                            <div class="share-metric-value" id="share-pnl">0%</div>
+                            <div class="share-metric-label">P&L</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="share-buttons">
+                    <button class="share-btn twitter" id="share-twitter">
+                        <i class="fab fa-twitter"></i> Share on Twitter
+                    </button>
+                    <button class="share-btn facebook" id="share-facebook">
+                        <i class="fab fa-facebook"></i> Share on Facebook
+                    </button>
+                    <button class="share-btn copy" id="copy-link">
+                        <i class="fas fa-link"></i> Copy Link
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading Bitcoin Dad Ledger...</p>
+        </div>
+    </div>
+
+    <!-- Emergency loading hide script -->
+    <script>
+        // Force hide loading after 4 seconds as emergency fallback
+        setTimeout(() => {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
+        }, 4000);
+    </script>
+
+    <!-- PWA Install Prompt -->
+    <div class="pwa-install-prompt" id="pwa-install-prompt">
+        <div class="pwa-prompt-content">
+            <i class="fas fa-mobile-alt"></i>
+            <div>
+                <h4>Add to Home Screen</h4>
+                <p>Install the Bitcoin Dad Ledger for quick access</p>
+            </div>
+            <button class="pwa-install-btn" id="pwa-install-btn">Install</button>
+            <button class="pwa-dismiss-btn" id="pwa-dismiss-btn">×</button>
+        </div>
+    </div>
+
+    <!-- Load scripts from root directory (adjusted paths) -->
+    <script src="data.js"></script>
+    <script src="achievements.js"></script>
+    <script src="insights.js"></script>
+    <script src="user-system.js"></script>
+    <script src="animations.js"></script>
+    <script src="main.js"></script>
+</body>
 </html>
