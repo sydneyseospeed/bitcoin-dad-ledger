@@ -1,49 +1,44 @@
 {
-  "name": "bitcoin-dad-ledger",
-  "private": false,
-  "version": "2.0.0",
-  "description": "Ultimate Bitcoin DCA tracker with achievements, leaderboards, and multi-currency support. Build generational wealth through consistent Bitcoin stacking.",
-  "keywords": [
-    "bitcoin",
-    "dca",
-    "dollar-cost-averaging",
-    "cryptocurrency",
-    "investment-tracker",
-    "bitcoin-dad",
-    "portfolio",
-    "react",
-    "vercel"
-  ],
-  "author": "Bitcoin Dad Community",
-  "license": "MIT",
-  "type": "module",
+  "name": "avatar-blue-gradient",
+  "version": "1.0.0",
+  "description": "Your Figma Plugin",
+  "main": "code.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint --ext .ts,.tsx --ignore-pattern node_modules .",
+    "lint:fix": "eslint --ext .ts,.tsx --ignore-pattern node_modules --fix .",
+    "watch": "npm run build -- --watch"
   },
-  "dependencies": {
-    "axios": "^1.11.0",
-    "chart.js": "^4.5.0",
-    "dayjs": "^1.11.13",
-    "lucide-react": "^0.541.0",
-    "react": "^19.1.1",
-    "react-chartjs-2": "^5.3.0",
-    "react-dom": "^19.1.1"
-  },
+  "author": "",
+  "license": "",
   "devDependencies": {
-    "@eslint/js": "^9.33.0",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^9.33.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.3.0",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.12",
-    "vite": "^7.1.2"
+    "@figma/eslint-plugin-figma-plugins": "*",
+    "@figma/plugin-typings": "*",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.2"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:@figma/figma-plugins/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    },
+    "root": true,
+    "rules": {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_",
+          "caughtErrorsIgnorePattern": "^_"
+        }
+      ]
+    }
   }
 }
