@@ -1,0 +1,57 @@
+/* Copy this entire content into css/style.css */
+
+/* Bitcoin Reserve - DCA Tracker Styles */
+:root {
+    /* Updated Brand Colors - Blue Gradient Theme */
+    --primary-blue: #1e3a8a;
+    --secondary-blue: #3b82f6;
+    --accent-teal: #06b6d4;
+    --accent-green: #10b981;
+    --bitcoin-orange: #f7931a;
+    --bitcoin-orange-dark: #d87717;
+    --bitcoin-orange-light: #ffa726;
+    
+    /* Updated Neutral Colors */
+    --dark-bg: #0f172a;
+    --card-bg: #1e293b;
+    --border-color: #334155;
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    
+    /* Status Colors */
+    --success-color: #4caf50;
+    --error-color: #f44336;
+    --warning-color: #ff9800;
+    
+    /* Layout */
+    --container-max-width: 1200px;
+    --border-radius: 12px;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.4);
+    
+    /* Animation Variables */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+/* Dark Theme Variables */
+body.dark-theme {
+    --dark-bg: #0f172a;
+    --card-bg: #1e293b;
+    --border-color: #334155;
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+}
+
+/* Light Theme Variables */
+body.light-theme {
+    --dark-bg: #f8fafc;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+}
